@@ -427,6 +427,10 @@
                     <label class="ble-ids-label" for="bleIdsInput">Allowed BLE TX IDs (comma-separated):</label>
                     <input type="text" class="ble-ids-input" id="bleIdsInput" placeholder="e.g., ID001, ID002, ID003">
                 </div>
+                <div class="ble-ids-section" style="margin-top: 10px;">
+                    <label class="ble-ids-label" for="floorNumberInput">Floor Number:</label>
+                    <input type="number" class="ble-ids-input" id="floorNumberInput" placeholder="Enter floor number...">
+                </div>
             </div>
         </div>
 
@@ -483,6 +487,9 @@
                 
                 // BLE TX IDs
                 this.allowedBleIds = [];
+                
+                // Floor number
+                this.floorNumber = null;
                 
                 // Dot properties
                 this.dots = [];
@@ -562,6 +569,12 @@
                         this.allowedBleIds = [];
                     }
                     this.updateDotsList(); // Refresh the list to update validation styling
+                });
+                
+                // Floor number input change listener
+                document.getElementById('floorNumberInput').addEventListener('input', (e) => {
+                    const value = e.target.value.trim();
+                    this.floorNumber = value ? parseInt(value, 10) : null;
                 });
                 
                 // Mouse events for panning
@@ -689,6 +702,11 @@
                     return;
                 }
                 
+                if (this.floorNumber === null || isNaN(this.floorNumber)) {
+                    alert('Error: Please enter a floor number before saving.');
+                    return;
+                }
+                
                 // Check if start datetime is later than end datetime
                 const startDate = new Date(this.startDateTime);
                 const endDate = new Date(this.endDateTime);
@@ -709,7 +727,8 @@
                     dots: this.dots.map(dot => ({
                         ble_tx_id: dot.dotId || '',
                         coordinate_pixels: [dot.imageX, dot.imageY],
-                        datetime: dot.timestamp
+                        datetime: dot.timestamp,
+                        floor: this.floorNumber
                     }))
                 };
                 
